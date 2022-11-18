@@ -39,6 +39,7 @@ Ejemplo de una peticion:
 let url='https://api-create-file.herokuapp.com//csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]'
 
 ```
+Enviamos por metodo POST la data a la API y esta puere retornar un mensaje `msg` o la url de descarga `url`
 ```js
   fetch(url,{
         method:"post",
