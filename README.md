@@ -42,7 +42,7 @@ let url='https://api-create-file.herokuapp.com//csv/?text=true&header=Nombre Cli
 let data=["andres;ortega","camilo;hernandez"];
 
 ```
-Enviamos por metodo POST la data a la API y esta puere retornar un mensaje `msg` o la url de descarga `url`
+Enviamos por metodo POST la data a la API y esta retorna un mensaje `msg` o la url de descarga `url`
 ```js
   fetch(url,{
         method:"post",
