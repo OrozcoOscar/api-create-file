@@ -19,26 +19,38 @@ use `/txt/` pata texto plano
 
 # Ejemplo csv con json
 Ejemplo de una peticion:
-```
-csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]
-```
-<a target="_blanc" href='https://api-create-file.herokuapp.com/csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]
-'>Click aquí para ver<a/>
 
+```js
+let url='https://api-create-file.herokuapp.com/csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'
+
+```
 
 # Ejemplo csv con json agregandole un header personalizado
 Ejemplo de una peticion:
+```js
+let url='https://api-create-file.herokuapp.com/csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'
+
 ```
-csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]
-```
-<a target="_blanc" href='https://api-create-file.herokuapp.com/csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'>Click aquí para ver<a/>
+
 
 # Ejemplo csv con text agregandole un header personalizado
 Ejemplo de una peticion:
+```js
+let url='https://api-create-file.herokuapp.com//csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]'
+
 ```
-/csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]
+```js
+  fetch(url,{
+        method:"post",
+        body:JSON.stringify(data),
+        headers: {
+        'Content-Type': 'application/json'
+        }
+    }).then(e=>e.json()).then(({msg,url})=>{
+        if(url){
+            window.open(url)
+        }else if(msg){
+            alert(msg)
+        }
+    })
 ```
-
-<a target="_blanc" href='https://api-create-file.herokuapp.com/csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]'>Click aquí para ver<a/>
-
-
