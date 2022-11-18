@@ -21,14 +21,16 @@ use `/txt/` pata texto plano
 Ejemplo de una peticion:
 
 ```js
-let url='https://api-create-file.herokuapp.com/csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'
+let url='https://api-create-file.herokuapp.com/csv/?json=true';
+let data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}];
 
 ```
 
 # Ejemplo csv con json agregandole un header personalizado
 Ejemplo de una peticion:
 ```js
-let url='https://api-create-file.herokuapp.com/csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'
+let url='https://api-create-file.herokuapp.com/csv/?json=true&header=Nombre Cliente;Apellido Cliente';
+let data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}];
 
 ```
 
@@ -36,7 +38,8 @@ let url='https://api-create-file.herokuapp.com/csv/?json=true&header=Nombre Clie
 # Ejemplo csv con text agregandole un header personalizado
 Ejemplo de una peticion:
 ```js
-let url='https://api-create-file.herokuapp.com//csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]'
+let url='https://api-create-file.herokuapp.com//csv/?text=true&header=Nombre Cliente;Apellido Cliente';
+let data=["andres;ortega","camilo;hernandez"];
 
 ```
 Enviamos por metodo POST la data a la API y esta puere retornar un mensaje `msg` o la url de descarga `url`
