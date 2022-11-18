@@ -2,6 +2,7 @@ const express = require('express');
 const router=express.Router()
 const path = require('path');
 const fs = require('fs').promises
+console.clear()
 async function unlink(url) {
     console.log("del",url)
    await  fs.unlink(url).then(() => {
@@ -11,59 +12,43 @@ async function unlink(url) {
       })
 
 }
+async function Makefile(res,namef,body){
+    await fs.writeFile(path.join(__dirname,'../files/'+namef),body).then(async()=>{
+        console.log("A new file is created")
+        res.send({"url":"https://api-create-file.herokuapp.com/download/"+namef})
+        setTimeout(()=>{
+            unlink(path.join(__dirname,'../files/'+namef))
+        },120000);
+    })
+}
 router.get("/",(req,res)=>{
-    res.send(`
-    use /csv/ para archivos tipo csv y /txt/ pata texto plano <br>
-  [<br>
-    Parametros: <br>
-    text=true,<br>
-    json=true,<br>
-    ext; por defecto es .txt(solo para /txt/)<br>
-    header=string separado por delimeter si no se espesifica debe ser  por ';',<br>
-    delimeter=/*el separador en csv*/,<br>
-    data;puede ser un json en string,un string y para csv un string separado por ';'<br>
-    ]
-    <br>
-    Ejemplo <b>csv</b> con json 
-    <br> 
-    <a href='/csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'>/csv/?json=true&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]</a>
-    <br> <br>
-    Ejemplo <b>csv</b> con json agregandole un header personalizado
-    <br> 
-    <a href='/csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]'>/csv/?json=true&header=Nombre Cliente;Apellido Cliente&data=[{"nombre":"andres","apellido":"ortega"},{"nombre":"camilo","apellido":"hernandez"}]</a>
-    <br> <br> 
-    Ejemplo <b>csv</b> con text
-    <br> 
-    <a href='csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]'>/csv/?text=true&header=Nombre Cliente;Apellido Cliente&data=["andres;ortega","camilo;hernandez"]</a>
-    
-    `)
+    res.redirect('https://github.com/OrozcoOscar/api-create-file');
 })
-router.get("/csv",async (req,res)=>{
-    let {text,data,json,delimiter,header}=req.query
+router.post("/csv",async (req,res)=>{
+    let {name,text,json,delimiter,header}=req.query
+    let data =req.body
+    
     if(text){
         if(!header)header=""
         else header+="\n"
         let body=(header)
         try{
+            console.log(data)
             data=eval(data)
             data.map(e=>body+=e+"\n")
+            if(!name)name="";
+            let namef=name+"_"+Date.now()+".csv"
+            Makefile(res,namef,body);
         }catch(e){
             res.send({"err":"Data is Not correct;format : ['valor1;valor2','valor1;valor2'...]"})
         }
-        
-        let name=Date.now()+".csv"
-        await fs.writeFile(path.join(__dirname,'../files/'+name),body).then(async()=>{
-            console.log("se Creo un nuevo arcihvo")
-            res.download(path.join(__dirname,'../files/'+name))
-            setTimeout(()=>{
-                unlink(path.join(__dirname,'../files/'+name))
-            },60000)
-        });
     }else if(json){
         let body=""
         let myjson;
         try{
-            myjson=JSON.parse(data)
+            
+            myjson=JSON.parse(JSON.stringify(data))
+            
             if(header){
               body=header+"\n";
             }else{
@@ -74,7 +59,6 @@ router.get("/csv",async (req,res)=>{
                 body+="\n";
             }
             
-           
             myjson.map(e=>{
                 for(let i in e){
                     body+=e[i]+(delimiter || ";")
@@ -82,62 +66,52 @@ router.get("/csv",async (req,res)=>{
                 body=body.substr(0,body.length-1)
                 body+="\n";
             })
+            if(!name)name="";
+            let namef=name+"_"+Date.now()+".csv"
+            Makefile(res,namef,body);
         }catch(e){
             res.send({"err":"Data JSON is Not correct;format : [{\"atrr\":\"value\"}]"})
         }
         
-        let name=Date.now()+".csv"
-        await fs.writeFile(path.join(__dirname,'../files/'+name),body).then(async()=>{
-            console.log("se Creo un nuevo arcihvo")
-            res.download(path.join(__dirname,'../files/'+name))
-            setTimeout(()=>{
-                unlink(path.join(__dirname,'../files/'+name))
-            },60000)
-        });
     }else{
         res.send({"msg":"validate the JSON or TEXT data must be equal to true"})
     }
     
 })
-router.get("/txt",async (req,res)=>{
-    let {text,data,json,ext}=req.query
+router.post("/txt",async (req,res)=>{
+    let {text,json,ext,name}=req.query
+    let data =req.body
     if(!ext)ext=".txt"
     if(text){
         let body=data
-        let name=Date.now()+ext
-        await fs.writeFile(path.join(__dirname,'../files/'+name),body).then(async()=>{
-            console.log("se Creo un nuevo arcihvo")
-            res.download(path.join(__dirname,'../files/'+name))
-            setTimeout(()=>{
-                unlink(path.join(__dirname,'../files/'+name))
-            },60000)
-        });
+        if(!name)name="";
+        let namef=name+"_"+Date.now()+ext
+        Makefile(res,namef,body);
     }else if(json){
         let body=""
         let myjson;
         try{
-            myjson=JSON.parse(data)
+            myjson=myjson=JSON.parse(JSON.stringify(data))
+            myjson.map(e=>{
+                for(let i in e){
+                    body+=i+":"+e[i]+"\n";
+                }
+                body+="------------------------\n";
+            })
+            if(!name)name="";
+            let namef=name+"_"+Date.now()+ext
+            Makefile(res,namef,body);
         }catch(e){
             res.send({"err":"Data JSON is Not correct;format : [{\"atrr\":\"value\"}]"})
         }
-        myjson.map(e=>{
-            for(let i in e){
-                body+=i+":"+e[i]+"\n";
-            }
-            body+="------------------------\n";
-        })
-        let name=Date.now()+ext
-        await fs.writeFile(path.join(__dirname,'../files/'+name),body).then(async()=>{
-            console.log("se Creo un nuevo arcihvo")
-            res.download(path.join(__dirname,'../files/'+name))
-            setTimeout(()=>{
-                unlink(path.join(__dirname,'../files/'+name))
-            },60000)
-        });
+        
     }else{
         res.send({"msg":"validate the JSON or TEXT data must be equal to true"})
     }
     
     
+})
+router.get("/download/:file",async (req,res)=>{
+    res.download(path.join(__dirname,'../files/'+req.params.file))
 })
 module.exports=router
